@@ -1,0 +1,8 @@
+{
+	"require": {
+		"sherlock/sherlock": "dev-master"
+	},
+	"config": {
+		"vendor-dir": "Vendor"
+	}
+}
