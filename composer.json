@@ -1,8 +1,30 @@
 {
+	"name": "fg/cakephp-sherlock",
+	"type": "cakephp-plugin",
+	"description": "A plugin to use the Sherlock Elasticsearch client in a CakePHP 2 project.",
+	"version": "0.0.1",
+	"authors": [{
+		"name": "Félix Girault",
+		"email": "felix.girault@gmail.com",
+		"homepage": "http://www.felix-girault.fr",
+		"role": "Developer"
+	}],
+	"keywords": [
+		"search",
+		"client",
+		"elasticsearch"
+	],
+	"licence": "MIT",
+	"homepage": "http://github.com/felixgirault/cakephp-sherlock",
 	"require": {
-		"sherlock/sherlock": "dev-master"
+		"sherlock/sherlock": "dev-master",
+		"composer/installers": "~1.0",
+		"php": ">=5.3.9"
 	},
 	"config": {
 		"vendor-dir": "Vendor"
+	},
+	"extra": {
+		"installer-name": "Sherlock"
 	}
 }
