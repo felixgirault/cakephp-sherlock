@@ -96,6 +96,9 @@ class IndexableBehavior extends ModelBehavior {
 			}
 		}
 
+		if ( is_numeric( $data )) {
+			$data = $Model->findById( $data );
+		}
 		$Document = $this->sherlock( $Model )
 			->document( )
 			->index( $this->settings[ $a ]['index'])
