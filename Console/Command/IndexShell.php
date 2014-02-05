@@ -2,6 +2,10 @@
 
 /**
  *
+ *
+ *	@author Félix Girault <felix.girault@gmail.com>
+ *	@package Sherlock.Console.Command
+ *	@license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 class IndexShell extends AppShell {
@@ -14,30 +18,21 @@ class IndexShell extends AppShell {
 
 		$Parser = parent::getOptionParser( );
 
-		$Parser->addOption(
-			'model',
-			array(
-				'help' => __( 'Model to index.' ),
-				'short' => 'm',
-				'required' => true
-			)
-		);
+		$Parser->addOption( 'model', array(
+			'help' => __( 'Model to index.' ),
+			'short' => 'm',
+			'required' => true
+		));
 
-		$Parser->addOption(
-			'start',
-			array(
-				'short' => 's',
-				'default' => 1
-			)
-		);
+		$Parser->addOption( 'start', array(
+			'short' => 's',
+			'default' => 0
+		));
 
-		$Parser->addOption(
-			'block',
-			array(
-				'short' => 'b',
-				'default' => 1000
-			)
-		);
+		$Parser->addOption( 'block', array(
+			'short' => 'b',
+			'default' => 500
+		));
 
 		return $Parser;
 	}
@@ -48,34 +43,36 @@ class IndexShell extends AppShell {
 	 *
 	 */
 
+
 	public function main( ) {
 
-		$modelName = $this->params['model'];
+		$alias = $this->params['model'];
+		$start = $this->params['start'];
+		$block = $this->params['block'];
 
-		$this->uses = array( $modelName );
-		$this->_loadModels( );
+		$Model = ClassRegistry::init( $alias );
 
-		if ( !isset( $this->{$modelName})) {
-			$this->out( '<error>' . __( 'Unable to load model' ) . '</error>' );
+		if ( !$Model ) {
+			$this->out( "<error>Unable to load model: $alias</error>" );
 			return;
 		}
 
-		$records = $this->{$modelName}->find(
-			'all',
-			array(
-				'offset' => $this->params['start'],
-				'limit' => $this->params['block'],
-				'order' => "$modelName.id"
-			)
-		);
+		$this->out( 'Indexing...' );
 
-		if ( empty( $records )) {
-			$this->out( '<error>' . __( 'No records found' ) . '</error>' );
-			return;
-		}
+		do {
+			$records = $Model->find( 'all', array(
+				'offset' => $start,
+				'limit' => $block,
+				'order' => "$alias.id"
+			));
 
-		foreach ( $records as $record ) {
-			$this->{$modelName}->index( $record );
-		}
+			$this->out( $start . '-' . ( $start + count( $records )));
+			$start += $block;
+
+			foreach ( $records as $record ) {
+				$Model->index( $record );
+			}
+
+		} while ( count( $records ) === $block );
 	}
 }
