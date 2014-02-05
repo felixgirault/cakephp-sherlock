@@ -62,7 +62,7 @@ class IndexableBehavior extends ModelBehavior {
 	 *
 	 */
 
-	public function afterSave( Model $Model, $created ) {
+	public function afterSave( Model $Model, $created, $options = array( )) {
 
 		// let's get fresh data
 		$this->index( $Model, $Model->findById( $Model->id ));
