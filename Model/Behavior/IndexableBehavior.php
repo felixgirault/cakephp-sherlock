@@ -99,13 +99,16 @@ class IndexableBehavior extends ModelBehavior {
 		if ( is_numeric( $data )) {
 			$data = $Model->findById( $data );
 		}
+
 		$Document = $this->sherlock( $Model )
 			->document( )
 			->index( $this->settings[ $a ]['index'])
 			->type( $this->settings[ $a ]['type'])
 			->document(
 				$document,
-				$data[ $a ][ $Model->primaryKey ] ?: null
+				isset( $data[ $a ][ $Model->primaryKey ])
+					? $data[ $a ][ $Model->primaryKey ]
+					: null
 			);
 
 		$Document->execute( );
