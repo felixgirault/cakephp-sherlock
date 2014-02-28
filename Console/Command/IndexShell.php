@@ -18,21 +18,21 @@ class IndexShell extends AppShell {
 
 		$Parser = parent::getOptionParser( );
 
-		$Parser->addOption( 'model', array(
+		$Parser->addOption( 'model', [
 			'help' => __( 'Model to index.' ),
 			'short' => 'm',
 			'required' => true
-		));
+		]);
 
-		$Parser->addOption( 'start', array(
+		$Parser->addOption( 'start', [
 			'short' => 's',
 			'default' => 0
-		));
+		]);
 
-		$Parser->addOption( 'block', array(
+		$Parser->addOption( 'block', [
 			'short' => 'b',
 			'default' => 500
-		));
+		]);
 
 		return $Parser;
 	}
@@ -60,11 +60,11 @@ class IndexShell extends AppShell {
 		$this->out( 'Indexing...' );
 
 		do {
-			$records = $Model->find( 'all', array(
+			$records = $Model->find( 'all', [
 				'offset' => $start,
 				'limit' => $block,
 				'order' => "$alias.id"
-			));
+			]);
 
 			$this->out( $start . '-' . ( $start + count( $records )));
 			$start += $block;

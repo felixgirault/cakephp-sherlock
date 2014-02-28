@@ -30,24 +30,22 @@ class IndexableBehavior extends ModelBehavior {
 	 *	@param array $config Configuration settings.
 	 */
 
-	public function setup( Model $Model, $settings = array( )) {
+	public function setup( Model $Model, $settings = [ ]) {
 
 		$a = $Model->alias;
 
 		if ( !isset( $this->settings[ $a ])) {
-			$this->settings[ $a ] = array(
-				'nodes' => array(
-					array(
-						'host' => 'localhost',
-						'port' => 9200
-					)
-				),
+			$this->settings[ $a ] = [
+				'nodes' => [[
+					'host' => 'localhost',
+					'port' => 9200
+				]],
 				'index' => 'sherlock',
 				'type' => $Model->table,
-				'fields' => array( ),
-				'mapping' => array( ),
+				'fields' => [ ],
+				'mapping' => [ ],
 				'autoIndex' => true
-			);
+			];
 		}
 
 		$this->settings[ $a ] = array_merge(
@@ -62,7 +60,7 @@ class IndexableBehavior extends ModelBehavior {
 	 *
 	 */
 
-	public function afterSave( Model $Model, $created, $options = array( )) {
+	public function afterSave( Model $Model, $created, $options = [ ]) {
 
 		// let's get fresh data
 		$this->index( $Model, $Model->findById( $Model->id ));
@@ -77,7 +75,7 @@ class IndexableBehavior extends ModelBehavior {
 	public function index( Model $Model, $data ) {
 
 		$a = $Model->alias;
-		$document = array( );
+		$document = [ ];
 
 		foreach ( $this->settings[ $a ]['fields'] as $field ) {
 			list( $alias, $field ) = pluginSplit( $field );
@@ -161,8 +159,9 @@ class IndexableBehavior extends ModelBehavior {
 
 	protected function _buildMapping( Model $Model ) {
 
-		/*$schema = $Model->schema( );
-		$mapping = array( );
+		/*
+		$schema = $Model->schema( );
+		$mapping = [ ];
 
 		if ( is_array( $schema )) {
 			foreach ( $schema as $field => $meta ) {
@@ -172,6 +171,7 @@ class IndexableBehavior extends ModelBehavior {
 			}
 		}
 
-		$this->settings[ $Model->alias ]['mapping'];*/
+		$this->settings[ $Model->alias ]['mapping'];
+		*/
 	}
 }
