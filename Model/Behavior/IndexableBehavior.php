@@ -23,8 +23,6 @@ class IndexableBehavior extends ModelBehavior {
 	 *	- 'index' string Elasticsearch index.
 	 *	- 'type' string Elasticsearch type.
 	 *	- 'fields' array
-	 *	- 'mapping' array
-	 *	- 'autoIndex' boolean
 	 *
 	 *	@param Model $Model Model using this behavior.
 	 *	@param array $config Configuration settings.
@@ -42,9 +40,7 @@ class IndexableBehavior extends ModelBehavior {
 				]],
 				'index' => 'sherlock',
 				'type' => $Model->table,
-				'fields' => [ ],
-				'mapping' => [ ],
-				'autoIndex' => true
+				'fields' => [ ]
 			];
 		}
 
@@ -60,29 +56,14 @@ class IndexableBehavior extends ModelBehavior {
 	 *
 	 */
 
-	public function afterSave( Model $Model, $created, $options = [ ]) {
-
-		// let's get fresh data
-		$this->index( $Model, $Model->findById( $Model->id ));
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	public function index( Model $Model, $data ) {
+	public function index( Model $Model, $data, $options = [ ]) {
 
 		$a = $Model->alias;
+		$settings = $this->settings[ $a ];
 		$document = [ ];
 
-		foreach ( $this->settings[ $a ]['fields'] as $field ) {
-			list( $alias, $field ) = pluginSplit( $field );
-
-			if ( $alias === null ) {
-				$alias = $a;
-			}
+		foreach ( $settings['fields'] as $field ) {
+			list( $alias, $field ) = pluginSplit( $field, false, $a );
 
 			if ( isset( $data[ $alias ][ $field ])) {
 				$document[ $field ] = $data[ $alias ][ $field ];
@@ -100,8 +81,8 @@ class IndexableBehavior extends ModelBehavior {
 
 		$Document = $this->sherlock( $Model )
 			->document( )
-			->index( $this->settings[ $a ]['index'])
-			->type( $this->settings[ $a ]['type'])
+			->index( $settings['index'])
+			->type( $settings['type'])
 			->document(
 				$document,
 				isset( $data[ $a ][ $Model->primaryKey ])
@@ -120,19 +101,19 @@ class IndexableBehavior extends ModelBehavior {
 
 	public function sherlock( Model $Model ) {
 
-		$a = $Model->alias;
+		$settings = $this->settings[ $Model->alias ];
 
-		if ( isset( $this->settings[ $a ]['Sherlock'])) {
-			return $this->settings[ $a ]['Sherlock'];
+		if ( isset( $settings['Sherlock'])) {
+			return $settings['Sherlock'];
 		}
 
 		$Sherlock = new Sherlock( );
 
-		foreach ( $this->settings[ $a ]['nodes'] as $node ) {
+		foreach ( $settings['nodes'] as $node ) {
 			$Sherlock->addNode( $node['host'], $node['port']);
 		}
 
-		$this->settings[ $a ]['Sherlock'] = $Sherlock;
+		$settings['Sherlock'] = $Sherlock;
 		return $Sherlock;
 	}
 
@@ -144,34 +125,10 @@ class IndexableBehavior extends ModelBehavior {
 
 	public function search( Model $Model ) {
 
-		$a = $Model->alias;
+		$settings = $this->settings[ $Model->alias ];
 
 		return $this->sherlock( $Model )->search( )
-			->index( $this->settings[ $a ]['index'])
-			->type( $this->settings[ $a ]['type']);
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	protected function _buildMapping( Model $Model ) {
-
-		/*
-		$schema = $Model->schema( );
-		$mapping = [ ];
-
-		if ( is_array( $schema )) {
-			foreach ( $schema as $field => $meta ) {
-				if ( $meta['default'] !== null ) {
-					$mapping[ $field ] = $meta['default'];
-				}
-			}
-		}
-
-		$this->settings[ $Model->alias ]['mapping'];
-		*/
+			->index( $settings['index'])
+			->type( $settings['type']);
 	}
 }
