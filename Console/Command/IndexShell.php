@@ -43,7 +43,6 @@ class IndexShell extends AppShell {
 	 *
 	 */
 
-
 	public function main( ) {
 
 		$alias = $this->params['model'];
