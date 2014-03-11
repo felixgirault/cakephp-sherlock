@@ -56,7 +56,7 @@ class IndexableBehavior extends ModelBehavior {
 	 *
 	 */
 
-	public function index( Model $Model, $data, $options = [ ]) {
+	public function index( Model $Model, $data ) {
 
 		$a = $Model->alias;
 		$settings = $this->settings[ $a ];
